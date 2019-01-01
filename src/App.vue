@@ -35,7 +35,9 @@ import HelloWorld from "./components/HelloWorld.vue";
 export default {
   name: "app",
   data: function() {
+    console.log("process.env.VUE_APP_URL_API::: ", process.env.VUE_APP_URL_API);
     return {
+      urlApi: process.env.VUE_APP_URL_API,
       plans: [],
       users: [],
       newUserName: "",
@@ -58,28 +60,24 @@ export default {
           email: this.newUserEmail
         };
 
-        const newUser = await axios.post(
-          "http://localhost:8000/users",
-          dataNewUser
-        );
+        const newUser = await axios.post(`${this.urlApi}/users`, dataNewUser);
         this.users.push(dataNewUser);
-        this.newUserName = '';
-        this.newUserEmail = '';
+        this.newUserName = "";
+        this.newUserEmail = "";
       } catch (err) {
-        console.log("ERROR");
+        console.log("ERROR CREATING A USER: ", err.message);
+        alert(err.message);
       }
     },
-    loadUsers: function() {
-      axios.get("http://localhost:8000/users").then(
-        response => {
-          this.users = response.data;
-          console.log("this.users: ", this.users);
-        },
-        error => {
-          console.log("ERROR: ", err.message);
-          alert(err.message);
-        }
-      );
+    loadUsers: async function() {
+      try {
+        const response = await axios.get(`${this.urlApi}/users`);
+        this.users = response.data;
+        console.log("this.users: ", this.users);
+      } catch (err) {
+        console.log("ERROR LOADING USERS: ", err.message);
+        alert(err.message);
+      }
     },
     createPlan: async function() {
       try {
@@ -89,29 +87,25 @@ export default {
           country: this.newPlanCountry,
           description: this.newPlanDescription
         };
-        const newPlan = await axios.post(
-          "http://localhost:8000/plans",
-          dataNewPlan
-        );
+        const newPlan = await axios.post(`${this.urlApi}/plans`, dataNewPlan);
         this.plans.push(dataNewPlan);
         this.newPlanName = "";
         this.newPlanCity = "";
         this.newPlanCountry = "";
         this.newPlanDescription = "";
       } catch (err) {
-        console.log("ERROR: ", err.message);
+        console.log("ERROR CREATING A PLAN: ", err.message);
         alert(err.message);
       }
     },
-    loadPlans: function() {
-      axios.get("http://localhost:8000/plans").then(
-        response => {
-          this.plans = response.data;
-        },
-        error => {
-          console.log("ERROR: ", error);
-        }
-      );
+    loadPlans: async function() {
+      try {
+        const response = await axios.get(`${this.urlApi}/plans`);
+        this.plans = response.data;
+      } catch (err) {
+        console.log("ERROR LOADING A PLAN: ", err.message);
+        alert(err.message);
+      }
     }
   },
   mounted: function() {
