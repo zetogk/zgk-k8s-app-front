@@ -8,5 +8,6 @@ COPY . /usr/src/svc
 EXPOSE 8080
 
 RUN npm install
+RUN npm audit fix
 RUN npm rebuild
 CMD npm run serve
